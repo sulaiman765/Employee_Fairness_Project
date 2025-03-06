@@ -49,3 +49,71 @@
 ---
 
 ✅ **We will continue updating this file as we face and solve new issues in later phases!**
+# 🛠️ Testing & Debugging Log
+
+## ✅ Week 1: Initial Setup & No Recorded Model Results  
+During Week 1, we focused on:  
+- Selecting the dataset (`processed_employee_attrition.csv`).  
+- Installing essential libraries (Fairlearn, SHAP, DoWhy, PyTorch).  
+- Performing initial EDA (class imbalance, feature distributions).  
+
+🚀 **No model results were recorded during this phase. The first evaluation was in Week 2.**  
+
+---
+
+# 📈 Results Improvement Log  
+
+## ✅ Week 2: Initial Model Performance  
+
+### 🔹 Logistic Regression (Before Fairness Improvements)  
+**Accuracy:** 79.59%  
+**Recall (Attrition = 1):** 13%  
+
+### 🔹 Random Forest (Before Fairness Improvements)  
+**Accuracy:** 80.61%  
+**Recall (Attrition = 1):** 25.53%  
+
+**Key Problem:**  
+❌ The model failed to correctly classify employee attrition cases (very low recall).  
+
+---
+
+## ✅ Week 3 & 4: Applying SMOTE, Fairness Constraints, and Model Adjustments  
+
+### 🔹 Logistic Regression (After SMOTE & ExponentiatedGradient)  
+**Accuracy:** 78.91%  
+**Recall (Attrition = 1):** 61.70%  
+
+### 🔹 Random Forest (After SMOTE & ExponentiatedGradient)  
+**Accuracy:** 80.61%  
+**Recall (Attrition = 1):** 25.53% (No improvement)  
+
+**Key Fixes & Code Changes:**  
+🚀 **We applied SMOTE to balance the dataset, which improved recall.**  
+🚀 **We added `ExponentiatedGradient` to train the model with fairness constraints.**  
+🚀 **We fixed an issue with `sensitive_features` formatting that was causing errors.**  
+
+🔹 **SMOTE (Before & After)**  
+```python
+# ❌ Before (Without SMOTE, Poor Recall)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+# ✅ After (With SMOTE, Better Recall for Attrition Cases)
+from imblearn.over_sampling import SMOTE
+smote = SMOTE(random_state=42)
+X_train, y_train = smote.fit_resample(X_train, y_train)
+
+# ❌ Before (No Fairness Constraints, Unfair Model)
+logistic_model.fit(X_train, y_train)
+
+# ✅ After (Fairness Constraints Applied, More Fair Predictions)
+from fairlearn.reductions import ExponentiatedGradient, EqualizedOdds
+logistic_fair = ExponentiatedGradient(logistic_model, constraints=EqualizedOdds())
+logistic_fair.fit(X_train, y_train, sensitive_features=X_train_df[["Gender"]])
+
+# ❌ Before (Error in Fairlearn Constraints, Caused `AssertionError`)
+logistic_fair.fit(X_train, y_train, sensitive_features=X_train["Gender"])
+
+# ✅ After (Fixed by Converting `sensitive_features` to a DataFrame)
+sensitive_features = X_train_df[["Gender"]]  # Fix: Ensuring correct format
+logistic_fair.fit(X_train, y_train, sensitive_features=sensitive_features)
