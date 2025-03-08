@@ -117,3 +117,25 @@ logistic_fair.fit(X_train, y_train, sensitive_features=X_train["Gender"])
 # ✅ After (Fixed by Converting `sensitive_features` to a DataFrame)
 sensitive_features = X_train_df[["Gender"]]  # Fix: Ensuring correct format
 logistic_fair.fit(X_train, y_train, sensitive_features=sensitive_features)
+
+## ✅ Week 5: Deep Learning (FCNN) vs. Traditional Models
+
+### 🔹 FCNN (Before Fixes)  
+**Accuracy:** 84.01%  
+**Recall (Attrition = 1):** 0.00% ❌
+
+### 🔹 FCNN (After Applying SMOTE & Weighted Loss)  
+**Accuracy:** 77.21%  
+**Recall (Attrition = 1):** 70.21% ✅  
+
+### 🔹 Model Comparison  
+| Model | Accuracy | Recall (Attrition = 1) |
+|--------|----------|----------------|
+| **Logistic Regression (Fair)** | 78.57% | **61.70%** |
+| **Random Forest (Fair)** | 80.61% | **25.53%** |
+| **FCNN (Deep Learning)** | 77.21% | **70.21%** ✅ **(Best so far!)** |
+
+**Key Takeaways:**  
+✔ FCNN outperformed Logistic Regression & Random Forest in recall.  
+✔ Deep Learning is effective for fairness-aware attrition prediction.  
+✔ Next, we will analyze feature importance using SHAP to understand why the model makes these decisions.  
