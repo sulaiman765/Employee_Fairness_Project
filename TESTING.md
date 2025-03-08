@@ -124,16 +124,16 @@ logistic_fair.fit(X_train, y_train, sensitive_features=sensitive_features)
 **Accuracy:** 84.01%  
 **Recall (Attrition = 1):** 0.00% ❌  
 
-## 🔹 FCNN (After Applying SMOTE & Weighted Loss)  
+### 🔹 FCNN (After Applying SMOTE & Weighted Loss)  
 **Accuracy:** 77.21%  
 **Recall (Attrition = 1):** 70.21% ✅  
 
-## **Key Fixes & Code Changes**  
+### **Key Fixes & Code Changes**  
 🚀 **We applied SMOTE to balance the dataset, which improved recall.**  
 🚀 **We used a weighted loss function so the model pays more attention to minority class samples (Attrition = 1).**  
 🚀 **This significantly improved recall while keeping accuracy stable.**  
 
-## **🔹 SMOTE (Before & After)**  
+### **🔹 SMOTE (Before & After)**  
 ```python
 # ❌ Before (Without SMOTE, Poor Recall)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
@@ -152,4 +152,3 @@ class_weights = 1.0 / class_counts
 weights = torch.tensor(class_weights, dtype=torch.float32)
 
 criterion = nn.CrossEntropyLoss(weight=weights)
-
