@@ -118,9 +118,9 @@ logistic_fair.fit(X_train, y_train, sensitive_features=X_train["Gender"])
 sensitive_features = X_train_df[["Gender"]]  # Fix: Ensuring correct format
 logistic_fair.fit(X_train, y_train, sensitive_features=sensitive_features)
 
-# ✅ Week 5: Deep Learning (FCNN) vs. Traditional Models  
+## ✅ Week 5: Deep Learning (FCNN) vs. Traditional Models  
 
-## 🔹 FCNN (Before Fixes)  
+### 🔹 FCNN (Before Fixes)  
 **Accuracy:** 84.01%  
 **Recall (Attrition = 1):** 0.00% ❌  
 
