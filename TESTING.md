@@ -1,4 +1,4 @@
-# 🛠️ Testing & Debugging Log
+xvczvdxg# 🛠️ Testing & Debugging Log
 
 ## ✅ Week 1: Environment Setup & Data Preprocessing
 
@@ -152,3 +152,94 @@ class_weights = 1.0 / class_counts
 weights = torch.tensor(class_weights, dtype=torch.float32)
 
 criterion = nn.CrossEntropyLoss(weight=weights)
+
+# **Further Added Improvements for Week 5**
+
+## ✅ 1. SMOTE - Handling Class Imbalance  
+```python
+from imblearn.over_sampling import SMOTE
+
+# Apply SMOTE to balance dataset
+smote = SMOTE(random_state=42)
+X_train, y_train = smote.fit_resample(X_train, y_train)
+
+What it does: Balances the dataset by oversampling the minority class (employees who left).
+Why it improves fairness: Ensures that the model doesn't favor the majority class (employees who stayed), preventing biased predictions.
+
+
+
+class_counts = np.bincount(y_train)  # Count instances of each class
+class_weights = 1.0 / class_counts   # Compute inverse class frequency
+weights = torch.tensor(class_weights, dtype=torch.float32, device=device)
+
+# Use weighted loss function
+criterion = nn.CrossEntropyLoss(weight=weights)
+
+What it does: Penalizes misclassification of underrepresented classes more heavily.
+Why it improves fairness: Helps prevent the model from ignoring minority classes and encourages balanced predictions.
+
+import shap
+
+# Define model wrapper for SHAP
+def model_wrapper(x):
+    x_tensor = torch.tensor(x, dtype=torch.float32, device=device)
+    with torch.no_grad():
+        return model(x_tensor).cpu().numpy()
+
+# Reduce SHAP background dataset using k-means
+background = shap.kmeans(X_train, 10)
+
+# SHAP KernelExplainer
+explainer = shap.KernelExplainer(model_wrapper, background)
+shap_values = explainer.shap_values(X_test[:50])  # Compute SHAP values for 50 test samples
+
+What it does: Uses SHAP to analyze feature importance and detect bias in predictions.
+Why it improves fairness: Helps identify which features contribute to unfair model predictions, enabling bias mitigation strategies.
+
+class FCNN(nn.Module):
+    def __init__(self, input_size):
+        super(FCNN, self).__init__()
+        self.fc1 = nn.Linear(input_size, 64)
+        self.relu1 = nn.ReLU()
+        self.fc2 = nn.Linear(64, 32)
+        self.relu2 = nn.ReLU()
+        self.fc3 = nn.Linear(32, 2)  # Output layer (logits, no Softmax)
+
+    def forward(self, x):
+        x = self.relu1(self.fc1(x))
+        x = self.relu2(self.fc2(x))
+        x = self.fc3(x)  # Return raw logits
+        return x
+
+What it does: Removes Softmax activation so SHAP can correctly interpret raw model outputs.
+Why it improves fairness: Prevents SHAP from misrepresenting feature importance, leading to more accurate bias detection.
+
+from sklearn.ensemble import RandomForestClassifier
+
+try:
+    # If SHAP fails, use a fallback model
+    rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf_model.fit(X_train, y_train)
+
+    explainer = shap.TreeExplainer(rf_model)
+    shap_values = explainer.shap_values(X_test[:50])
+
+    shap_values_fixed = np.array(shap_values[1])  # Use class 1 SHAP values
+
+except Exception as e:
+    print(f"❌ SHAP computation failed: {str(e)}")
+
+What it does: Uses a fallback RandomForest model for SHAP when deep learning explainability fails.
+Why it improves fairness: Ensures that feature importance can still be analyzed even if SHAP struggles with the FCNN.
+
+y_test_df = pd.DataFrame({"Attrition": y_test})
+y_pred_df = pd.DataFrame({"Predicted": predictions})
+
+import os
+os.makedirs("data", exist_ok=True)
+
+y_test_df.to_csv("data/y_test.csv", index=False)
+y_pred_df.to_csv("data/y_pred.csv", index=False)
+
+What it does: Saves model predictions for later fairness analysis in fairness_evaluation.py.
+Why it improves fairness: Enables measurement of fairness metrics like Demographic Parity Difference and Equalized Odds in Week 6.
