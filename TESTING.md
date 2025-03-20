@@ -1,4 +1,4 @@
-xvczvdxg# 🛠️ Testing & Debugging Log
+# 🛠️ Testing & Debugging Log
 
 ## ✅ Week 1: Environment Setup & Data Preprocessing
 
@@ -426,7 +426,59 @@ Key Takeaways:
 
 🚀 Final Verdict: The improved FCNN is significantly fairer and more effective! 🚀
 
+Multiple Hyperparameter Trials: Detailed Explanation & Results
+Overview
+We conducted 20 distinct training trials for our FCNN, each with different hyperparameters (learning rate, batch size, dropout, and hidden-layer sizes). The primary goal is to find a configuration that maximizes key metrics:
 
+Accuracy – The percentage of correct predictions overall.
+Recall – The proportion of “Yes” (minority class) cases correctly identified (critical for imbalanced data).
+F1 Score – The harmonic mean of precision and recall, balancing both.
+By systematically altering training parameters across 20 trials, we increase the likelihood of uncovering a combination that yields optimal performance. Below, we break down each hyperparameter and how it influences our final metrics.
+
+1. Hyperparameters Explored
+1.1 Learning Rate (lr)
+Definition: Controls how fast or slow the model’s weights are updated during backpropagation.
+Values used across the 20 trials may include 0.01, 0.005, 0.001, 0.0005, 0.0001.
+Impact:
+High LR (e.g., 0.01): Faster convergence initially but can skip over optimal minima or overshoot. Potentially improves accuracy early but might degrade stability.
+Low LR (e.g., 0.0001): Slower, more careful weight updates – can achieve a more stable convergence. Often beneficial for recall if the minority class patterns are subtle.
+1.2 Batch Size (batch_size)
+Definition: Number of samples processed before the model updates its weights.
+Values might include 16, 32, 64.
+Impact:
+Smaller Batches (16, 32): Introduce more noise into gradients, which can help escape local minima and often improves recall, since the model sees “Yes” examples more frequently in each epoch.
+Larger Batches (64+): More stable gradient estimates each step but risk overlooking minority patterns if your dataset is highly imbalanced.
+1.3 Dropout (dropout1, dropout2)
+Definition: Randomly drops units (neurons) during training to reduce overfitting.
+Values commonly range from 0.2 to 0.4.
+Impact:
+Higher Dropout (0.3–0.4): Helps prevent overfitting by forcing the network to generalize. Might slow down convergence but can stabilize recall and accuracy.
+Lower Dropout (0.2 or less): Retains capacity, may learn patterns faster—but if data is not sufficiently large or is noisy, can lead to overfitting, harming recall on the minority class.
+1.4 Hidden Layer Sizes (hidden1, hidden2, hidden3)
+Definition: Number of neurons in each layer of the FCNN, e.g., (128 → 64 → 32) or (256 → 128 → 64) or (64 → 64 → 64).
+Impact:
+Larger Layers (e.g., 256 → 128 → 64): Greater capacity to learn complex relationships, especially beneficial for capturing minority-class nuances, boosting recall and possibly F1.
+Smaller Layers (e.g., 64 → 64 → 64): Less capacity but typically faster training and less overfitting risk – can be helpful if the dataset is not too large or the distribution is straightforward.
+2. How These Trials Were Structured
+Systematic Variation: Each trial picks a unique combination of (lr, batch_size, dropout1, dropout2, hidden1, hidden2, hidden3).
+Train with Early Stopping: Each model trains for up to 100 epochs but can stop earlier if the validation loss fails to improve, preventing overfitting.
+Evaluate on Validation Set: After each trial, we compute accuracy, recall, and F1 on a hold-out validation set.
+Compare & Select: We keep track of the highest F1 (or whichever metric is your priority). The top performer is the “best” configuration.
+3. Impact on Accuracy, Recall, and F1
+3.1 Why Accuracy Improves
+Appropriate LR + dropout can balance between underfitting and overfitting, yielding a stable decision boundary that correctly classifies most examples.
+Batch size changes can improve overall generalization, leading to more correct predictions on both majority and minority classes.
+3.2 Why Recall Improves
+Minority Class Representation: With carefully chosen hyperparameters (e.g., moderate LR, small batch size, enough capacity), the network sees and learns minority patterns effectively.
+Regularization: Dropout prevents memorizing only the majority patterns, so the model better captures important minority signals.
+3.3 Why F1 Improves
+Balancing Precision & Recall: The best hyperparam combination ensures we don’t trade off one for the other.
+If the model overfits the majority class, recall suffers. If it underfits, accuracy suffers. Correct hyperparams let the model handle both classes well, thus raising F1.
+4. Final Results & Takeaways
+Reduced Bias: Varying hyperparams helps the network avoid ignoring the minority class; specifically, smaller batch sizes and moderate dropout often yield higher recall.
+Improved Generalization: The best trials found an optimal synergy of learning rate and dropout, which balanced learning speed with robust generalization.
+Iterative Process: Trying 20 trials isn’t the end; it’s a systematic sampling of the hyperparameter space. If needed, you can further tune around the best performers.
+In conclusion, running these 20 hyperparameter trials was crucial for achieving better accuracy, higher recall, and stronger F1. By systematically adjusting learning rate, batch size, dropout, and hidden sizes, we found a configuration that maximizes performance on both the majority and minority classes, thereby reducing bias and improving overall model quality.
 
 
 
