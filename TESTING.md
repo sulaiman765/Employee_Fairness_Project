@@ -566,5 +566,48 @@ Documents testing, debugging, and fairness improvements.
 
 Tracks issues, solutions, and model performance over time.
 
+What is utils.py?
+utils.py is a shared utility file that contains reusable functions and classes used across multiple scripts in your project. Instead of writing the same code repeatedly in different files, you centralize it in utils.py and import it wherever needed.
+
+What Will utils.py Do?
+Here’s what utils.py will include:
+
+Data Loading:
+
+A function to load and preprocess the dataset (e.g., load_data).
+
+Data Preprocessing:
+
+A function to split the data, apply SMOTE, and normalize features (e.g., preprocess_data).
+
+Model Definition:
+
+A class for the FCNN model (e.g., FCNN).
+
+Common Utilities:
+
+Functions for saving/loading models, computing metrics, etc.
+
+Why Refactor Code into utils.py?
+1. Avoid Code Duplication
+Instead of writing the same code in train_fcnn_baseline.py, train_fcnn_improved.py, and other files, you write it once in utils.py and reuse it.
+
+Example: Both train_fcnn_baseline.py and train_fcnn_improved.py load data, preprocess it, and define the FCNN model. This code can be moved to utils.py.
+
+2. Improve Readability
+By moving reusable code to utils.py, your main scripts (e.g., train_fcnn_baseline.py) become shorter and easier to read.
+
+Example: Instead of 100 lines of data loading and preprocessing, you’ll have just one line: X_train, X_test, y_train, y_test = preprocess_data(X, y).
+
+3. Easier Maintenance
+If you need to update the data loading or preprocessing logic, you only need to change it in one place (utils.py) instead of updating multiple files.
+
+Example: If you decide to change the normalization method, you only update preprocess_data in utils.py.
+
+4. Promote Modularity
+Each script focuses on a specific task (e.g., training, evaluation) and relies on utils.py for common functionality.
+
+Example: train_fcnn_baseline.py focuses on training the baseline model, while utils.py handles data loading and preprocessing.
+
 
 
