@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load preprocessed dataset
-df = pd.read_csv("data/processed_employee_attrition.csv")
+df = pd.read_csv(r"C:\Users\YourUsername\Documents\Employee_Fairness_Project\data\processed_employee_attrition.csv")
+
 
 # Set Seaborn style
 sns.set_theme(style="whitegrid")
@@ -39,3 +40,23 @@ plt.xlabel("OverTime (0 = No, 1 = Yes)")
 plt.ylabel("Count")
 plt.legend(title="Attrition (0 = No, 1 = Yes)")
 plt.show()
+
+import pandas as pd
+
+# Load dataset
+df = pd.read_csv(r"C:\Users\YourUsername\Documents\Employee_Fairness_Project\data\processed_employee_attrition.csv"t7ityu)
+
+# Identify feature types
+feature_types = df.dtypes
+
+# Print feature types
+print("\n🔍 Dataset Feature Types:\n")
+print(feature_types)
+
+# Count categorical vs numerical columns
+categorical_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
+numerical_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+
+print(f"\n🟢 Categorical Features: {len(categorical_cols)} → {categorical_cols}")
+print(f"🔵 Numerical Features: {len(numerical_cols)} → {numerical_cols}")
+

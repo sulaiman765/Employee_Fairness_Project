@@ -34,5 +34,5 @@ print("\nFirst 5 Rows of Cleaned Dataset:")
 print(df.head())
 
 # Save preprocessed data for future use
-df.to_csv("data/processed_employee_attrition.csv", index=False)
+df.to_csv("processed_employee_attrition.csv", index=False)
 print("\n✅ Preprocessed dataset saved as 'processed_employee_attrition.csv'")

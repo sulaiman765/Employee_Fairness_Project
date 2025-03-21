@@ -4,7 +4,7 @@ from fairlearn.metrics import MetricFrame
 from sklearn.metrics import accuracy_score, recall_score
 
 # Load preprocessed dataset
-df = pd.read_csv("data/processed_employee_attrition.csv")
+df = pd.read_csv(r"C:\Users\YourUsername\Documents\Employee_Fairness_Project\data\processed_employee_attrition.csv")
 
 # Load test predictions from `train_models.py`
 y_test = pd.read_csv("data/y_test.csv")["Attrition"]

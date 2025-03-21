@@ -609,5 +609,46 @@ Each script focuses on a specific task (e.g., training, evaluation) and relies o
 
 Example: train_fcnn_baseline.py focuses on training the baseline model, while utils.py handles data loading and preprocessing.
 
+Further Analysis of Model Performance and Fairness
+In this project, we evaluated three model types using both standard performance and fairness metrics. Below is a summary of our findings and conclusions:
 
+Model Comparison
+1. Baseline FCNN
+Overall Accuracy: ~84.0%
+Recall (Minority Class - Attrition = 1): 0.0%
+Observations:
+Although the baseline FCNN achieves high overall accuracy, it completely fails to predict any positive cases. This indicates that the model is heavily biased toward the majority class, rendering it ineffective for identifying attrition—an especially critical concern given our fairness goals.
+2. RandomForest Model (from train_models.py)
+Overall Accuracy: ~80.6%
+Recall (Minority Class): ~25.5%
+Group Fairness Analysis:
+Subgroup performance varies notably. For example, one group (Gender=1, OverTime=1) has lower accuracy (~59.1%) and recall (~19.0%), while another (Gender=1, OverTime=0) achieves higher accuracy (~88.1%) and recall (~30.0%).
+Observations:
+The RandomForest model shows some capability to predict the minority class compared to the baseline FCNN, but the overall recall remains low. Additionally, there are significant disparities across sensitive subgroups, indicating uneven model behavior.
+3. Improved FCNN
+Overall Accuracy: ~77.2%
+Recall (Minority Class): ~65.96%
+Observations:
+Despite a slight drop in overall accuracy, the improved FCNN model substantially increases recall for attrition cases. This suggests a better balance in identifying positive cases, which is critical when reducing bias is a priority. The model's enhanced recall comes at the expense of a modest decrease in accuracy—a trade-off that is often acceptable when addressing fairness in imbalanced datasets.
+Overall Ranking
+When considering both standard performance and fairness, the models are ranked as follows:
+
+Improved FCNN:
+Pros: Significantly higher recall for the minority class (65.96%) indicates effective identification of attrition cases.
+Cons: Slightly lower overall accuracy (~77.2%), but this is acceptable given the improved fairness.
+RandomForest Model:
+Pros: Moderate overall accuracy (80.6%) with nonzero recall (25.5%).
+Cons: Notable disparities in performance across sensitive groups, and the recall for attrition remains relatively low.
+Baseline FCNN:
+Pros: High overall accuracy (~84.0%).
+Cons: Zero recall for attrition makes it unsuitable despite the high accuracy.
+Conclusions
+Fairness vs. Accuracy Trade-off:
+The baseline FCNN, while accurate overall, is inadequate because it fails to capture the minority class. In contrast, the improved FCNN sacrifices some overall accuracy to achieve a much higher recall, thereby reducing bias and ensuring more equitable outcomes across sensitive groups.
+
+Importance of Group-Level Analysis:
+Fairness metrics by subgroup reveal disparities that are not evident when only looking at aggregate performance. For instance, the RandomForest model shows varying performance among groups defined by Gender and OverTime, highlighting the need for targeted fairness interventions.
+
+Recommendation:
+For applications where correctly identifying attrition is critical (and where fairness is a primary concern), the Improved FCNN is the most suitable model despite its lower overall accuracy. It demonstrates a more balanced performance and a better trade-off between fairness and predictive power.
 

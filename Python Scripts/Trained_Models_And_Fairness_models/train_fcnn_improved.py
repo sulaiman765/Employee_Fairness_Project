@@ -179,4 +179,21 @@ os.makedirs("data", exist_ok=True)
 y_test_df.to_csv("data/y_test.csv", index=False)
 y_pred_df.to_csv("data/y_pred.csv", index=False)
 
-print("\n✅ Test labels and predictions saved for fairness analysis.")
+# ✅ Save test labels and improved model predictions for fairness analysis
+y_test_df = pd.DataFrame({"Attrition": y_test})
+y_pred_df = pd.DataFrame({"Predicted": predictions})
+
+# ✅ Ensure 'data' directory exists
+import os
+os.makedirs("data", exist_ok=True)
+
+# ✅ Save the improved FCNN predictions
+y_test_df.to_csv("data/y_test_fcnn_improved.csv", index=False)
+y_pred_df.to_csv("data/y_pred_fcnn_improved.csv", index=False)
+
+print("\n✅ Test labels and predictions from improved FCNN saved for fairness analysis.")
+
+
+
+
+

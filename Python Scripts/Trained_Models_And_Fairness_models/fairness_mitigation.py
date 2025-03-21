@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 
 # Load preprocessed dataset
-df = pd.read_csv("data/processed_employee_attrition.csv")
+df = pd.read_csv(r"C:\Users\YourUsername\Documents\Employee_Fairness_Project\data\processed_employee_attrition.csv")
 
 # Separate features (X) and target variable (y)
 X = df.drop(columns=["Attrition"])
