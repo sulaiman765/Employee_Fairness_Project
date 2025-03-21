@@ -480,7 +480,91 @@ Improved Generalization: The best trials found an optimal synergy of learning ra
 Iterative Process: Trying 20 trials isn’t the end; it’s a systematic sampling of the hyperparameter space. If needed, you can further tune around the best performers.
 In conclusion, running these 20 hyperparameter trials was crucial for achieving better accuracy, higher recall, and stronger F1. By systematically adjusting learning rate, batch size, dropout, and hidden sizes, we found a configuration that maximizes performance on both the majority and minority classes, thereby reducing bias and improving overall model quality.
 
+1. Project Structure Overview
+Let’s start by summarizing the purpose of each file and how they interact:
 
+Core Files:
+eda.py:
+
+Performs exploratory data analysis (EDA) on the dataset.
+
+Visualizes class distributions, correlations, and attrition by gender/overtime.
+
+Output: Insights into dataset structure and potential biases.
+
+preprocessing.py:
+
+Cleans and preprocesses the raw dataset.
+
+Handles categorical encoding, normalization, and feature scaling.
+
+Output: processed_employee_attrition.csv.
+
+new_preprocessing.py:
+
+Implements advanced preprocessing techniques like Adaptive Multi-Group Distribution Normalization (AMDN).
+
+Balances the dataset using SMOTE and handles sensitive attributes.
+
+Output: train_amdn.csv.
+
+train_models.py:
+
+Trains baseline models (Logistic Regression, Random Forest).
+
+Applies SMOTE for class imbalance and evaluates model performance.
+
+Output: Trained models and predictions (y_test.csv, y_pred.csv).
+
+train_fcnn_baseline.py:
+
+Trains a baseline Fully Connected Neural Network (FCNN) without fairness improvements.
+
+Output: Baseline FCNN model and predictions.
+
+train_fcnn_improved.py:
+
+Trains an improved FCNN with fairness techniques (SMOTE, class weighting, SHAP).
+
+Output: Improved FCNN model and predictions.
+
+train_fcnn_with_shap_for_new_preprocessing.py:
+
+Trains an FCNN using the advanced preprocessed dataset (train_amdn.csv).
+
+Includes SHAP explainability and fallback RandomForest for SHAP.
+
+Output: Best FCNN model, SHAP plots, and predictions.
+
+fairness_analysis.py:
+
+Computes fairness metrics (Demographic Parity, Equal Opportunity) for model predictions.
+
+Output: Fairness metrics for baseline and improved models.
+
+fairness_evaluation.py:
+
+Compares fairness metrics between baseline and improved models.
+
+Output: Fairness comparison results (fairness_comparison.csv).
+
+fairness_mitigation.py:
+
+Implements fairness mitigation techniques (ExponentiatedGradient, Equalized Odds).
+
+Output: Fairness-aware models and predictions.
+
+permutation_importance.py:
+
+Computes feature importance using permutation importance.
+
+Output: Feature importance rankings and visualizations.
+
+TESTING.md:
+
+Documents testing, debugging, and fairness improvements.
+
+Tracks issues, solutions, and model performance over time.
 
 
 
