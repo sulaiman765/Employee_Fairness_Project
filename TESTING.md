@@ -652,3 +652,259 @@ Fairness metrics by subgroup reveal disparities that are not evident when only l
 Recommendation:
 For applications where correctly identifying attrition is critical (and where fairness is a primary concern), the Improved FCNN is the most suitable model despite its lower overall accuracy. It demonstrates a more balanced performance and a better trade-off between fairness and predictive power.
 
+Detailed Fairness Analysis Report
+Our fairness analysis is structured into two parts: the existing fairness features and the new additional fairness metrics and visualizations. This dual approach provides both a high-level view and a more nuanced insight into the fairness performance of our models.
+
+1. Existing Fairness Features
+Using Fairlearn’s MetricFrame, we compute several standard performance metrics for the overall dataset and for specific subgroups defined by sensitive attributes (in our case, Gender and OverTime). These metrics include:
+
+Accuracy:
+The proportion of correct predictions (both positives and negatives) over the total number of predictions. It gives a general measure of model performance.
+
+Precision:
+The ratio of true positive predictions to the total predicted positives. This metric tells us how reliable a positive prediction is, but in our case, it is particularly useful when combined with recall.
+
+Recall (True Positive Rate):
+The ratio of correctly predicted positive observations to all actual positives. Recall is especially critical in our setting, as it shows how effectively the model identifies attrition cases (the minority class).
+
+F1 Score:
+The harmonic mean of precision and recall. F1 score provides a balanced measure that takes both false positives and false negatives into account.
+
+Balanced Accuracy:
+The average of recall obtained on each class. This metric is particularly valuable for imbalanced datasets since it accounts for unequal class distribution.
+
+Using these metrics, we can evaluate our model both in aggregate and for each subgroup. For example, in our best adversarial model, we observed overall values such as:
+
+Accuracy ≈ 86.05%
+Recall ≈ 51.06%
+F1 Score ≈ 53.93%
+When we break these metrics down by subgroup (e.g., by Gender and OverTime combinations), we may notice differences. For instance:
+
+For Gender=0, OverTime=0, the accuracy might be high but the recall might be lower.
+Conversely, for Gender=1, OverTime=1, the model might exhibit much higher recall and F1 score.
+These group-level metrics help us identify disparities—indicating that the model's performance is not uniform across all demographic groups.
+
+2. New Additional Fairness Metrics and Visualizations
+To supplement the standard metrics, we introduced additional fairness metrics that focus on quantifying disparities in the model’s predictions. These include:
+
+Demographic Parity Difference:
+
+Definition: The difference in the positive prediction rate between two groups.
+Interpretation: A value close to 0 indicates that both groups receive similar rates of positive predictions, suggesting equitable treatment.
+Our Result: Approximately 0.0509, suggesting a small difference in positive prediction rates.
+Equal Opportunity Difference:
+
+Definition: The difference in true positive rates (recall) between groups.
+Interpretation: This metric focuses on the fairness of correctly identifying the minority class for each group. A larger difference indicates that one group is at a disadvantage in terms of having their positive outcomes recognized.
+Our Result: Approximately 0.1109, indicating that one group has a modest advantage over the other in correctly identifying positives.
+Average Odds Difference:
+
+Definition: The average of the differences in true positive rates and false positive rates between groups.
+Interpretation: It provides a balanced view of performance disparities, taking into account both types of errors. A lower value means the error rates are similar across groups.
+Our Result: Approximately 0.0663, which suggests a moderate disparity.
+Disparate Impact Ratio:
+
+Definition: The ratio of the positive prediction rate for the unprivileged group to that of the privileged group.
+Interpretation: A value near 1 indicates parity between groups, while values far from 1 suggest potential bias.
+Our Result: Approximately 1.4538, implying that one group is about 45% more likely to receive a positive prediction than the other—a disparity that may warrant further investigation.
+Visualizations
+To complement these numerical metrics, we generated visualizations that display these additional fairness metrics for the sensitive feature "Gender." The visualizations include:
+
+Bar Chart for Demographic Parity:
+This chart shows the positive prediction rate for each gender group, helping visualize whether the rates are similar.
+
+Bar Chart for Equal Opportunity (TPR):
+This chart displays the true positive rate for each group, illustrating any differences in the model's ability to correctly identify positive cases.
+
+Bar Chart for False Positive Rate (FPR):
+This chart highlights the false positive rate for each group, which is important for understanding if one group is more likely to be incorrectly labeled as positive.
+
+These visualizations provide an immediate, intuitive view of the disparities between groups, supporting our quantitative findings and making it easier to communicate the fairness performance of our model.
+
+3. Summary
+Existing Features:
+Our initial fairness analysis using Fairlearn’s MetricFrame provided group-level accuracy, precision, recall, F1 score, and balanced accuracy. This helped us understand overall performance and detect disparities between subgroups.
+
+New Additional Metrics:
+We extended the fairness analysis by introducing additional metrics (Demographic Parity Difference, Equal Opportunity Difference, Average Odds Difference, and Disparate Impact Ratio) that more directly quantify the differences in outcomes between sensitive groups.
+
+Visualizations:
+The bar charts for positive prediction rates, true positive rates, and false positive rates allow us to visually inspect these disparities, providing a clearer picture of where our model may be exhibiting bias.
+
+Conclusions:
+While our best adversarial model achieves a high overall accuracy (86.05%) and a reasonable recall (51.06%), the additional metrics and visualizations reveal that disparities still exist among subgroups. For example, one subgroup (e.g., Gender=1, OverTime=0) has notably lower performance compared to another (e.g., Gender=1, OverTime=1). These insights are critical for guiding future fairness refinements and ensuring that our model's decisions are equitable across all groups.
+
+This comprehensive review of our fairness analysis will be included in TESTING.md as part of our documentation and report, ensuring that both the existing and additional fairness measures are well-documented and understood.
+
+Visualizing Additional Fairness Metrics
+To gain deeper insight into how our adversarial model treats different gender groups, we plotted three additional fairness metrics for the Gender feature:
+
+Demographic Parity per Group (Positive Prediction Rate)
+Equal Opportunity per Group (True Positive Rate)
+False Positive Rate per Group
+
+Sample 3-panel bar chart showing Positive Prediction Rate (Demographic Parity), True Positive Rate (Equal Opportunity), and False Positive Rate for each gender group.
+
+Demographic Parity per Group (Left Chart)
+
+Definition: The proportion of samples predicted as positive (i.e., receiving the “1” label) in each group.
+Observation: The bar for Gender=0 is slightly lower than for Gender=1. This implies that one group is receiving more positive predictions than the other.
+Interpretation: A difference here suggests that, overall, one gender might be favored or disfavored in terms of positive classifications.
+Equal Opportunity per Group (Middle Chart)
+
+Definition: The true positive rate (TPR) for each group, which is also the recall for positive cases in that group.
+Observation: Gender=1 (right bar) might have a slightly higher TPR than Gender=0 (left bar).
+Interpretation: A higher TPR means that the model is more likely to correctly identify positive outcomes for that group. If the difference is large, it indicates potential unfairness in how positives are detected between groups.
+False Positive Rate per Group (Right Chart)
+
+Definition: The fraction of negative cases that are incorrectly classified as positive within each group.
+Observation: If Gender=1 shows a higher FPR than Gender=0 (or vice versa), it means that group is more often incorrectly labeled as positive.
+Interpretation: A difference here indicates the model is making more false alarms for one group compared to the other.
+Key Takeaways
+Demographic Parity Difference:
+The difference in positive prediction rates between groups is a direct measure of whether one group is receiving systematically more positive classifications.
+
+Equal Opportunity Difference:
+By focusing on TPR (recall) for each group, we see how well the model identifies actual positives in each demographic. A substantial difference signals unequal treatment in identifying positives.
+
+False Positive Rate Disparities:
+Groups with higher FPR are more often falsely flagged as positive. This can have significant implications, depending on the context of the model’s usage.
+
+Overall, these bar charts reinforce the numerical findings of the Demographic Parity Difference, Equal Opportunity Difference, and Average Odds Difference computed in the code. They provide a quick visual confirmation of any disparities and make it easier to communicate these findings to stakeholders who may not be as comfortable parsing raw metrics.
+
+Final Results: Advanced FCNN with SHAP & AMDN Preprocessing
+Best Hyperparameter Trial
+Learning Rate: 0.0001
+Batch Size: 32
+Lambda_adv: 0.5 (Adversarial component)
+Accuracy: 82.31%
+Recall: 59.57%
+F1 Score: 51.85%
+These results indicate that the best model, under the given hyperparameter configurations, achieved a moderate trade‐off between accuracy and recall. The slightly lower F1 score suggests there is still room for improvement in balancing precision and recall.
+
+Standard Performance & Fairness Metrics
+Standard Metrics (Overall):
+
+Accuracy: ~82.31%
+Precision: ~45.90%
+Recall: ~59.57%
+F1 Score: ~51.85%
+Fairlearn Group-Level Metrics:
+By breaking down performance by (Gender, OverTime) groups, we observe:
+
+(Gender=0, OverTime=0):
+
+Accuracy: 91.67%
+Precision: 50.00%
+Recall: 42.86%
+F1 Score: 46.15%
+(Gender=0, OverTime=1):
+
+Accuracy: 71.88%
+Precision: 50.00%
+Recall: 66.67%
+F1 Score: 57.14%
+(Gender=1, OverTime=0):
+
+Accuracy: 80.60%
+Precision: 10.00%
+Recall: 20.00%
+F1 Score: 13.33%
+(Gender=1, OverTime=1):
+
+Accuracy: 77.27%
+Precision: 73.91%
+Recall: 80.95%
+F1 Score: 77.27%
+These subgroup metrics show significant variability. In particular, the subgroup (Gender=1, OverTime=0) has low precision and recall, indicating the model struggles more with that demographic slice.
+
+Additional Fairness Metrics
+Demographic Parity Difference: ~0.0864
+
+Interpretation: One gender group receives positive predictions at a rate ~8.64% higher than the other.
+Equal Opportunity Difference: ~0.0504
+
+Interpretation: The difference in recall (true positive rate) between the two gender groups is ~5.04%.
+Average Odds Difference: ~0.0618
+
+Interpretation: This averages the differences in both true positive rate and false positive rate across groups, indicating a moderate level of disparity (~6.18%).
+Disparate Impact Ratio: ~1.5568
+
+Interpretation: One group is about 55.68% more likely to receive a positive prediction than the other, pointing to potential bias.
+Visualizations
+
+Example 3-panel chart showing Demographic Parity (Positive Prediction Rate), Equal Opportunity (True Positive Rate), and False Positive Rate for each gender group.
+
+Left (Demographic Parity):
+Shows the positive prediction rate is higher for Gender=1 than for Gender=0, consistent with the Demographic Parity Difference above.
+Center (Equal Opportunity):
+True positive rate also favors Gender=1, though not by as large a margin.
+Right (False Positive Rate):
+The false positive rates vary, further highlighting differences in error distribution.
+Key Takeaways
+Improved Recall:
+Compared to baseline FCNNs, recall is higher (59.57%), indicating that more positive (attrition) cases are being caught.
+Subgroup Disparities:
+Significant differences persist for certain subgroups, especially (Gender=1, OverTime=0).
+Moderate Bias Indicators:
+Additional metrics (Demographic Parity Difference, Equal Opportunity Difference, etc.) confirm there is still bias to address, but the model is more balanced than some earlier baselines.
+Overall, this advanced FCNN with SHAP explainability and AMDN preprocessing is a notable step forward, providing a decent balance of performance and fairness. However, the subgroup metrics reveal ongoing challenges in equitable treatment, pointing to possible avenues for further fairness mitigation or hyperparameter refinement.
+
+Review of FCNN Adversarial Learning Model
+Overview
+The FCNN adversarial learning model was designed to reduce bias by mitigating the influence of sensitive attributes (in this case, Gender) on the main prediction task (Employee Attrition). This was achieved by integrating an adversary branch with a gradient reversal layer into the network architecture. The adversary is trained to predict the sensitive attribute, while the gradient reversal mechanism forces the shared representation to become less predictive of that attribute. As a result, the model is encouraged to base its predictions on features that are not correlated with the sensitive attribute.
+
+Key Components
+Gradient Reversal Layer:
+This layer inverts gradients during backpropagation, discouraging the shared layers from learning representations that are strongly indicative of the sensitive attribute. This helps in reducing bias in the model's predictions.
+
+Adversary Branch:
+Alongside the main prediction head (for Attrition), an adversary branch is added to predict Gender. The adversary’s loss is combined with the main loss (with a hyperparameter λ controlling the trade-off), ensuring that the learned features are less sensitive to Gender.
+
+AMDN Preprocessing:
+The model uses advanced preprocessing (Adaptive Multi-Group Distribution Normalization, AMDN) to further mitigate bias before training.
+
+Hyperparameter Tuning:
+A comprehensive hyperparameter tuning loop was implemented, exploring various configurations of learning rate, batch size, and the adversarial weighting parameter (λ). The best trial was selected based on the F1 score, achieving a balanced trade-off between overall performance and fairness.
+
+Performance Metrics
+For the best trial (with learning rate 0.0001, batch size 32, λ = 0.5), the model achieved:
+
+Overall Accuracy: ~82.31%
+Recall: ~59.57%
+F1 Score: ~51.85%
+Balanced Accuracy: ~73.11%
+Precision: ~45.90%
+Fairness Evaluation
+Standard fairness metrics computed using Fairlearn’s MetricFrame indicated that the model's performance varies across different subgroups defined by Gender and OverTime. For example:
+
+Group (Gender=0, OverTime=0):
+Accuracy ≈ 91.67%, Precision ≈ 50%, Recall ≈ 42.86%
+Group (Gender=0, OverTime=1):
+Accuracy ≈ 71.88%, Precision ≈ 50%, Recall ≈ 66.67%
+Group (Gender=1, OverTime=0):
+Accuracy ≈ 80.60%, Precision ≈ 10%, Recall ≈ 20%
+Group (Gender=1, OverTime=1):
+Accuracy ≈ 77.27%, Precision ≈ 73.91%, Recall ≈ 80.95%
+These disparities indicate that while the adversarial approach improves overall fairness, some differences between subgroups persist.
+
+Additional Fairness Metrics and Visualizations
+In addition to the standard metrics, we computed further fairness measures:
+
+Demographic Parity Difference: ~0.0864
+(Indicating a modest difference in positive prediction rates between gender groups.)
+Equal Opportunity Difference: ~0.0504
+(Showing a small disparity in true positive rates between groups.)
+Average Odds Difference: ~0.0618
+(Reflecting a moderate difference when averaging differences in both true and false positive rates.)
+Disparate Impact Ratio: ~1.5568
+(Suggesting one group is approximately 55% more likely to receive a positive prediction than the other.)
+Visualizations (bar charts) were generated to provide an intuitive view of:
+
+Positive Prediction Rates (Demographic Parity) per Gender Group
+True Positive Rates (Equal Opportunity) per Gender Group
+False Positive Rates per Gender Group
+These visualizations help illustrate the extent of disparity and serve as a diagnostic tool to validate that bias reduction strategies are making a difference.
+
+Conclusion
+The FCNN adversarial learning model (implemented in train_fcnn_with_shap_for_new_preprocessing.py) demonstrates a significant step forward in reducing bias compared to earlier models. Although there are still some disparities at the subgroup level, the overall performance and fairness metrics indicate that this model offers a balanced trade-off between predictive accuracy and fairness. This model is currently our best candidate for ensuring equitable treatment across sensitive groups.
