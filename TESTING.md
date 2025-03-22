@@ -852,59 +852,77 @@ Overall, this advanced FCNN with SHAP explainability and AMDN preprocessing is a
 
 Review of FCNN Adversarial Learning Model
 Overview
-The FCNN adversarial learning model was designed to reduce bias by mitigating the influence of sensitive attributes (in this case, Gender) on the main prediction task (Employee Attrition). This was achieved by integrating an adversary branch with a gradient reversal layer into the network architecture. The adversary is trained to predict the sensitive attribute, while the gradient reversal mechanism forces the shared representation to become less predictive of that attribute. As a result, the model is encouraged to base its predictions on features that are not correlated with the sensitive attribute.
+The FCNN Adversarial Learning model was developed to mitigate bias in employee attrition predictions by reducing the influence of the sensitive attribute Gender on the model’s decisions. The model integrates an adversarial branch into the main network using a gradient reversal layer. The adversary branch is tasked with predicting Gender, while the gradient reversal mechanism forces the shared feature representation to be less predictive of Gender. Additionally, advanced preprocessing using Adaptive Multi-Group Distribution Normalization (AMDN) was applied to further align feature distributions across groups. A comprehensive hyperparameter tuning loop was used to optimize learning rate, batch size, and the adversarial weighting parameter (λ), with the best trial selected based on the F1 score.
 
 Key Components
 Gradient Reversal Layer:
-This layer inverts gradients during backpropagation, discouraging the shared layers from learning representations that are strongly indicative of the sensitive attribute. This helps in reducing bias in the model's predictions.
+In this model, a gradient reversal layer is inserted before the adversary branch. During the forward pass, it passes the data unchanged. However, during backpropagation, it multiplies the gradients by a negative factor, thereby penalizing the network for learning representations that are strongly correlated with the sensitive attribute. This encourages the shared layers to develop representations that are less indicative of Gender, thus reducing bias.
 
 Adversary Branch:
-Alongside the main prediction head (for Attrition), an adversary branch is added to predict Gender. The adversary’s loss is combined with the main loss (with a hyperparameter λ controlling the trade-off), ensuring that the learned features are less sensitive to Gender.
+The network contains a separate branch (the adversary) that aims to predict the sensitive attribute (Gender) from the shared representation. The loss from the adversary is combined with the main loss (which predicts attrition), weighted by the hyperparameter λ. This combined objective pushes the shared representation to contain less information about Gender while still allowing accurate attrition predictions.
 
 AMDN Preprocessing:
-The model uses advanced preprocessing (Adaptive Multi-Group Distribution Normalization, AMDN) to further mitigate bias before training.
+The model uses Adaptive Multi-Group Distribution Normalization (AMDN) as a preprocessing step. AMDN aligns feature distributions across different protected groups, reducing inherent biases in the input data. This results in a more balanced dataset that helps the model learn fairer representations.
 
 Hyperparameter Tuning:
-A comprehensive hyperparameter tuning loop was implemented, exploring various configurations of learning rate, batch size, and the adversarial weighting parameter (λ). The best trial was selected based on the F1 score, achieving a balanced trade-off between overall performance and fairness.
+A series of hyperparameter configurations (varying learning rate, batch size, and λ) was tested to optimize model performance. The best trial was selected based on the F1 score, ensuring that the model achieves a balanced performance with acceptable trade-offs between precision and recall.
 
 Performance Metrics
-For the best trial (with learning rate 0.0001, batch size 32, λ = 0.5), the model achieved:
+For the best trial (for example, with a learning rate of 0.0001, batch size of 32, and λ = 0.5), the model achieved:
 
-Overall Accuracy: ~82.31%
-Recall: ~59.57%
-F1 Score: ~51.85%
-Balanced Accuracy: ~73.11%
-Precision: ~45.90%
+Overall Accuracy: Approximately 82.31%
+
+Recall: Approximately 59.57%
+
+F1 Score: Approximately 51.85%
+
+Balanced Accuracy: Approximately 73.11%
+
+Precision: Approximately 45.90%
+
+These metrics indicate that the model maintains robust overall performance while achieving a reasonable recall on the minority class, which is critical in scenarios where failing to detect attrition is costly.
+
 Fairness Evaluation
-Standard fairness metrics computed using Fairlearn’s MetricFrame indicated that the model's performance varies across different subgroups defined by Gender and OverTime. For example:
+Standard fairness metrics were computed using Fairlearn’s MetricFrame, which provides overall performance as well as subgroup-specific performance based on sensitive attributes (Gender and OverTime). The results revealed differences among subgroups:
 
-Group (Gender=0, OverTime=0):
-Accuracy ≈ 91.67%, Precision ≈ 50%, Recall ≈ 42.86%
-Group (Gender=0, OverTime=1):
-Accuracy ≈ 71.88%, Precision ≈ 50%, Recall ≈ 66.67%
-Group (Gender=1, OverTime=0):
-Accuracy ≈ 80.60%, Precision ≈ 10%, Recall ≈ 20%
-Group (Gender=1, OverTime=1):
-Accuracy ≈ 77.27%, Precision ≈ 73.91%, Recall ≈ 80.95%
-These disparities indicate that while the adversarial approach improves overall fairness, some differences between subgroups persist.
+For the subgroup with Gender=0 and OverTime=0, the model achieves high accuracy (around 91.67%) but moderate recall (42.86%).
+
+For Gender=0 and OverTime=1, the model's accuracy drops to about 71.88% while recall improves to 66.67%.
+
+For Gender=1 and OverTime=0, the model shows lower precision and recall (approximately 10% precision and 20% recall).
+
+For Gender=1 and OverTime=1, the model performs strongly with approximately 77.27% accuracy, 73.91% precision, and 80.95% recall.
+
+These subgroup differences suggest that while the adversarial model has reduced overall bias compared to earlier versions, some disparities still exist among specific groups.
 
 Additional Fairness Metrics and Visualizations
-In addition to the standard metrics, we computed further fairness measures:
+To further quantify bias, we computed additional fairness metrics:
 
-Demographic Parity Difference: ~0.0864
-(Indicating a modest difference in positive prediction rates between gender groups.)
-Equal Opportunity Difference: ~0.0504
-(Showing a small disparity in true positive rates between groups.)
-Average Odds Difference: ~0.0618
-(Reflecting a moderate difference when averaging differences in both true and false positive rates.)
-Disparate Impact Ratio: ~1.5568
-(Suggesting one group is approximately 55% more likely to receive a positive prediction than the other.)
-Visualizations (bar charts) were generated to provide an intuitive view of:
+Demographic Parity Difference: Approximately 0.0864
+This metric measures the difference in the positive prediction rates between the two gender groups. A smaller difference would indicate that both groups receive positive predictions at similar rates.
 
-Positive Prediction Rates (Demographic Parity) per Gender Group
-True Positive Rates (Equal Opportunity) per Gender Group
-False Positive Rates per Gender Group
-These visualizations help illustrate the extent of disparity and serve as a diagnostic tool to validate that bias reduction strategies are making a difference.
+Equal Opportunity Difference: Approximately 0.0504
+This metric measures the difference in true positive rates (recall) between groups. A lower value indicates that the model identifies the actual positive cases more equally across groups.
+
+Average Odds Difference: Approximately 0.0618
+This metric averages the differences in both true positive and false positive rates between groups, providing a combined measure of disparity. A value near 0 would suggest balanced error rates across groups.
+
+Disparate Impact Ratio: Approximately 1.5568
+This ratio compares the positive prediction rates between the groups. A ratio closer to 1 indicates parity, whereas a value significantly higher than 1 suggests that one group is much more likely to receive a positive prediction than the other.
+
+Visualizations
+Bar charts were generated to visualize the additional fairness metrics for the sensitive attribute Gender:
+
+Demographic Parity per Group:
+This chart shows the positive prediction rate for each gender group. The differences in the bars reflect the Demographic Parity Difference.
+
+Equal Opportunity per Group:
+This chart displays the true positive rate (recall) for each gender group, highlighting any differences in the model’s ability to correctly identify positives.
+
+False Positive Rate per Group:
+This chart shows the rate of false positives for each group, providing insight into the error distribution between genders.
+
+These visualizations help illustrate the degree of disparity between groups and serve as a diagnostic tool to understand where further fairness improvements may be necessary.
 
 Conclusion
-The FCNN adversarial learning model (implemented in train_fcnn_with_shap_for_new_preprocessing.py) demonstrates a significant step forward in reducing bias compared to earlier models. Although there are still some disparities at the subgroup level, the overall performance and fairness metrics indicate that this model offers a balanced trade-off between predictive accuracy and fairness. This model is currently our best candidate for ensuring equitable treatment across sensitive groups.
+The FCNN Adversarial Learning model, as implemented in train_fcnn_with_shap_for_new_preprocessing.py, demonstrates a significant improvement in reducing bias compared to earlier models. Although subgroup disparities remain (with certain groups, such as Gender=1 and OverTime=0, performing worse), the overall performance is robust, and the additional fairness metrics and visualizations provide valuable insights into the residual disparities. This model is currently the best candidate for ensuring a balanced trade-off between predictive accuracy and fairness across sensitive groups.
