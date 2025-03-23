@@ -926,3 +926,151 @@ These visualizations help illustrate the degree of disparity between groups and 
 
 Conclusion
 The FCNN Adversarial Learning model, as implemented in train_fcnn_with_shap_for_new_preprocessing.py, demonstrates a significant improvement in reducing bias compared to earlier models. Although subgroup disparities remain (with certain groups, such as Gender=1 and OverTime=0, performing worse), the overall performance is robust, and the additional fairness metrics and visualizations provide valuable insights into the residual disparities. This model is currently the best candidate for ensuring a balanced trade-off between predictive accuracy and fairness across sensitive groups.
+
+Detailed Comparison and Interpretation of FCNN with SHAP and FCNN Adversarial Learning Models
+Overview
+The two models under review are advanced approaches developed to improve fairness in predicting employee attrition. The FCNN with SHAP model focuses on explainability by integrating SHAP values to understand feature importance and uses advanced preprocessing (AMDN) to reduce bias. The FCNN Adversarial Learning model, on the other hand, incorporates an adversary branch with a gradient reversal layer to directly discourage the encoding of sensitive information (Gender) into the model's representations. Both models underwent hyperparameter tuning and were evaluated using overall performance metrics, subgroup-specific fairness metrics, and additional fairness measures. Visualizations (bar charts) were generated to provide an intuitive view of disparities between sensitive groups.
+
+FCNN with SHAP Model
+Performance Metrics
+Overall Accuracy: ~82.31%
+
+Recall: ~59.57%
+
+F1 Score: ~51.85%
+
+Balanced Accuracy: ~73.11%
+
+Precision: ~45.90%
+
+Interpretation:
+The FCNN with SHAP model demonstrates moderate overall performance. The improved recall indicates that the model is better at detecting attrition cases compared to earlier baselines. However, the precision is relatively lower, suggesting that while more positive cases are captured, there may also be more false positives. The F1 score reflects this trade-off between precision and recall.
+
+Standard Fairness Metrics (Fairlearn’s MetricFrame)
+The model was evaluated on subgroups defined by Gender and OverTime:
+
+Group (Gender=0, OverTime=0):
+
+High accuracy (~91.67%) but moderate recall (~42.86%).
+
+Group (Gender=0, OverTime=1):
+
+Lower accuracy (~71.88%) with higher recall (~66.67%).
+
+Group (Gender=1, OverTime=0):
+
+Lower performance with very low precision (around 10%) and recall (approximately 20%).
+
+Group (Gender=1, OverTime=1):
+
+Strong performance with high recall (~80.95%) and high precision (~73.91%).
+
+Interpretation:
+The subgroup analysis shows that while the FCNN with SHAP model improves overall detection of attrition, significant disparities remain. In particular, the subgroup (Gender=1, OverTime=0) exhibits notably poor performance, indicating that the model may still be biased against that group.
+
+Additional Fairness Metrics and Visualizations for FCNN with SHAP
+Demographic Parity Difference: ~0.0864
+(Indicates a moderate difference in the rate of positive predictions between gender groups.)
+
+Equal Opportunity Difference: ~0.0504
+(Shows a small gap in recall between the groups.)
+
+Average Odds Difference: ~0.0618
+(Reflects a moderate average difference in both true positive and false positive rates.)
+
+Disparate Impact Ratio: ~1.5568
+(Suggests that one gender is about 55.68% more likely to receive a positive prediction than the other.)
+
+Visualization Interpretation:
+
+The Demographic Parity chart displays a modest gap between the groups, supporting the numeric difference of 0.0864.
+
+The Equal Opportunity chart shows a small difference in recall (about 0.0504), meaning that one group is slightly favored in correctly identifying positives.
+
+The False Positive Rate chart reveals differences that, when averaged with TPR differences, result in an Average Odds Difference of ~0.0618.
+
+The Disparate Impact Ratio indicates a notable imbalance, suggesting that further bias mitigation could help bring the ratio closer to 1.
+
+FCNN Adversarial Learning Model
+Performance Metrics
+For the best trial (e.g., with lr=0.01, batch size=64, lambda_adv=1.0):
+
+Overall Accuracy: ~86.05%
+
+Recall: ~55.32%
+
+F1 Score: ~55.91%
+
+Precision: ~56.52%
+
+Balanced Accuracy: ~73.61%
+
+Interpretation:
+The adversarial model achieves higher overall accuracy and F1 score compared to the FCNN with SHAP model. Although the recall is comparable, the improved precision in the adversarial model indicates a better balance between false positives and false negatives. This suggests that the adversarial training is effective at making the model less reliant on sensitive information while still performing well on the primary task.
+
+Standard Fairness Metrics (Fairlearn’s MetricFrame)
+Subgroup performance for the adversarial model:
+
+Group (Gender=0, OverTime=0):
+
+Accuracy ~90.48%, Recall ~42.86%
+
+Group (Gender=0, OverTime=1):
+
+Accuracy ~78.13%, Recall ~66.67%
+
+Group (Gender=1, OverTime=0):
+
+Accuracy ~85.07%, Recall ~20.00%
+
+Group (Gender=1, OverTime=1):
+
+Accuracy ~86.36%, Recall ~71.43%
+
+Interpretation:
+The adversarial model demonstrates a more balanced subgroup performance compared to the FCNN with SHAP model. While some disparities remain (for example, low recall in (Gender=1, OverTime=0)), the overall performance across groups is improved, reflecting the effectiveness of the gradient reversal and adversarial branch in reducing bias.
+
+Additional Fairness Metrics and Visualizations for the Adversarial Model
+Demographic Parity Difference: ~0.0164
+(This very low value indicates nearly equal positive prediction rates across gender groups.)
+
+Equal Opportunity Difference: ~-0.0141
+(A value near zero suggests that both groups have almost identical true positive rates.)
+
+Average Odds Difference: ~-0.0062
+(Close to zero, indicating balanced error rates across groups.)
+
+Disparate Impact Ratio: ~1.1117
+(A ratio near 1 implies that positive predictions are almost evenly distributed between the groups.)
+
+Visualization Interpretation:
+
+The Demographic Parity chart shows nearly equal positive prediction rates, which aligns with the low difference of 0.0164.
+
+The Equal Opportunity chart indicates almost balanced recall between the groups, with an Equal Opportunity Difference near zero.
+
+The False Positive Rate chart demonstrates minimal disparity, contributing to the very low Average Odds Difference (-0.0062).
+
+Overall Comparison and Conclusion
+Performance Comparison:
+
+The adversarial model outperforms the FCNN with SHAP model in overall accuracy (86.05% vs. ~82.31%) and achieves a higher F1 score (55.91% vs. ~51.85%).
+
+The adversarial model also shows improved precision, leading to a more balanced trade-off between false positives and false negatives.
+
+Fairness Comparison:
+
+The additional fairness metrics for the adversarial model are significantly lower (or closer to zero) than those for the FCNN with SHAP model.
+
+The Demographic Parity Difference and Equal Opportunity Difference for the adversarial model are near zero, indicating that positive predictions and recall are nearly equal across gender groups.
+
+The Average Odds Difference is also almost zero, and the Disparate Impact Ratio is closer to 1, suggesting balanced treatment.
+
+Visualizations Comparison:
+
+Visualizations for the FCNN with SHAP model reveal moderate gaps between gender groups in positive prediction rates, TPR, and FPR.
+
+In contrast, the adversarial model’s visualizations show nearly equal bar heights for all three metrics, supporting the numerical findings that the adversarial approach reduces bias more effectively.
+
+Conclusion:
+Based on both numerical metrics and visual evidence, the adversarial FCNN model (as implemented in train_fcnn_adversarial_learning.py) is superior in terms of bias reduction. It delivers higher overall performance while significantly reducing disparities across sensitive groups compared to the FCNN with SHAP model. This makes the adversarial model the best candidate when both predictive accuracy and fairness are prioritized.
