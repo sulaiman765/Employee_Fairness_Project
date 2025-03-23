@@ -1074,3 +1074,34 @@ In contrast, the adversarial model’s visualizations show nearly equal bar heig
 
 Conclusion:
 Based on both numerical metrics and visual evidence, the adversarial FCNN model (as implemented in train_fcnn_adversarial_learning.py) is superior in terms of bias reduction. It delivers higher overall performance while significantly reducing disparities across sensitive groups compared to the FCNN with SHAP model. This makes the adversarial model the best candidate when both predictive accuracy and fairness are prioritized.
+
+Summary of Fairness Integration in Hyperparameter Tuning
+We have updated our adversarial FCNN model's hyperparameter tuning process to explicitly incorporate fairness metrics into the model selection criteria. The changes are summarized as follows:
+
+Fairness Penalty Calculation:
+
+For each trial, in addition to calculating the standard F1 score, we compute additional fairness metrics for the sensitive attribute (Gender).
+
+We derive a fairness penalty by summing the absolute differences in:
+
+Positive prediction rates (Demographic Parity),
+
+True Positive Rates (Equal Opportunity),
+
+False Positive Rates.
+
+Combined Score for Model Selection:
+
+A combined score is calculated as:
+
+Combined Score = F1 Score − β × (Fairness Penalty)
+
+A fairness weight (β) is set to control the trade-off between performance and fairness. This ensures that the model selection process optimizes not only for high predictive performance but also for reduced bias.
+
+Model Selection Based on Combined Score:
+
+The best hyperparameter configuration is chosen based on the highest combined score, rather than solely on F1 score.
+
+This approach favors models that maintain a good balance between overall accuracy and equitable treatment across sensitive groups.
+
+By integrating these fairness metrics into the tuning process, our selected model is now more balanced in terms of both performance and fairness, which aligns with the ethical objectives of our project.
