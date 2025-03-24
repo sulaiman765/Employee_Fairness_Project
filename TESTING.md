@@ -1105,3 +1105,116 @@ The best hyperparameter configuration is chosen based on the highest combined sc
 This approach favors models that maintain a good balance between overall accuracy and equitable treatment across sensitive groups.
 
 By integrating these fairness metrics into the tuning process, our selected model is now more balanced in terms of both performance and fairness, which aligns with the ethical objectives of our project.
+
+Below is a summary explaining the differences between the basic causal fairness analysis and the extended causal fairness analysis:
+
+Causal Fairness Analysis
+
+Builds a causal graph using DoWhy with Gender as the treatment and Attrition as the outcome, using other variables as common causes.
+
+Identifies the causal effect and estimates it using methods like propensity score matching.
+
+Runs one or two basic refutation tests (e.g., the placebo treatment refuter) to check the robustness of the estimated causal effect.
+
+Creates a modified dataset by dropping Gender and trains a simple model on it to compare overall performance.
+
+Extended Causal Fairness Analysis
+
+Includes everything from the basic analysis and adds additional layers:
+
+Incorporates multiple refutation tests (such as a data subset refuter, placebo treatment refuter, and (if applicable) others) for a more comprehensive validation of the causal effect.
+
+Performs an intervention experiment by setting Gender to a constant value to see how that impacts the causal estimate.
+
+Provides a more detailed comparison between the causal effect estimate and the model’s performance and fairness metrics when Gender is removed.
+
+These extra steps help determine whether the observed bias is truly driven by Gender (i.e., causal) or simply a correlation.
+
+This summary outlines how the extended analysis goes deeper by adding more refutation tests and intervention experiments, providing a richer understanding of whether Gender causally drives bias compared to the basic approach.
+
+Causal Fairness Analysis Review
+1. Causal Inference Using DoWhy
+Causal Graph & Estimand:
+We built a causal model using DoWhy, treating Gender as the treatment and Attrition as the outcome, with all other features as common causes. The identified estimand was of type NONPARAMETRIC_ATE, and the causal model was specified through a backdoor adjustment.
+
+Estimated Causal Effect:
+The estimated causal effect of Gender on Attrition is approximately 0.0463. This value suggests that, on average, a change in Gender is associated with a 4.63% change in the probability of Attrition.
+
+Refutation Tests:
+The Placebo Treatment Refuter was applied, resulting in a new effect of nearly zero (–0.00082) with a high p-value (0.96). This indicates that when a placebo treatment is used, the estimated effect essentially disappears. Such refutation results suggest that the observed effect of Gender may not be strongly causal but could be largely due to correlations.
+
+2. Intervention Experiment
+Intervention Setup:
+We attempted an intervention experiment by setting all Gender values to a constant (0) to see if the causal effect could be re-estimated. However, the estimation failed because Gender became constant, which prevented NearestNeighbors from finding any valid samples. This highlights that variation in Gender is necessary for estimating its causal effect.
+
+3. Modified Dataset Analysis (Dropping Gender)
+Modified Dataset:
+We created a modified dataset by dropping the Gender column entirely and retrained a simple FCNN model on this modified data.
+
+Model Performance:
+The model trained without Gender achieved:
+
+Accuracy: 82.31%
+
+Recall: 51.06%
+
+F1 Score: 48.00%
+
+These performance metrics are similar to the original model (which included Gender), indicating that removing Gender does not cause a dramatic degradation in overall performance.
+
+4. Interpretation and Implications
+Causal Effect Insight:
+The causal analysis estimates a modest effect (4.63%) of Gender on Attrition. However, refutation tests—especially the placebo treatment refuter—suggest that this effect is not robust. In other words, when we simulate a placebo scenario, the effect nearly vanishes, implying that the influence of Gender may be driven by correlations rather than a strong causal relationship.
+
+Impact of Removing Gender:
+The modified model (without Gender) shows comparable performance (accuracy ~82.31%) with only a slight reduction in recall and F1 score. This minimal performance loss suggests that while Gender is correlated with Attrition, its removal does not severely impact predictive power. This finding supports the view that Gender may be contributing to bias, but its causal role is limited.
+
+Overall Conclusion:
+The combined evidence indicates that although Gender is associated with Attrition, its causal effect is modest and not robustly supported by the refutation tests. Moreover, the model trained without Gender maintains similar performance, suggesting that other factors might be influencing bias. These insights can help guide further bias mitigation strategies—possibly by focusing on other correlated features—rather than solely targeting Gender.
+
+Extended Causal Fairness Analysis Review
+Overview
+The extended causal fairness analysis builds upon the basic causal fairness analysis by adding several key components that provide a more comprehensive understanding of how Gender influences Attrition. In the extended analysis, we:
+
+Build a Detailed Causal Graph:
+We define a causal model using DoWhy with Gender as the treatment, Attrition as the outcome, and all other relevant features as common causes. This graph clarifies the assumed relationships between variables.
+
+Estimate the Causal Effect:
+We identify and estimate the causal effect of Gender on Attrition using propensity score matching. The estimated effect is approximately 0.0463, meaning that, on average, a change in Gender is associated with a 4.63% change in Attrition probability.
+
+Perform Multiple Refutation Tests:
+
+Data Subset Refuter: Tests the robustness of the estimated effect on subsets of data.
+
+Placebo Treatment Refuter: Applies a placebo treatment to see if the estimated effect disappears.
+In our case, the placebo refuter yielded a near-zero effect (–0.00082) with a high p-value (0.96), suggesting that the observed effect is not robust.
+
+Intervention Experiment:
+An intervention is performed by setting all Gender values to a constant (0) to see if the causal effect can still be estimated. The estimation fails due to the constant treatment, reinforcing that variation in Gender is required for effect estimation.
+
+Modified Dataset Analysis:
+A separate analysis is conducted where Gender is dropped entirely from the dataset. A simple FCNN model trained on this modified dataset achieves performance metrics (Accuracy: 82.31%, Recall: 51.06%, F1 Score: 44.68%) that are comparable to the original model, indicating that removing Gender does not cause significant performance degradation.
+
+Why the Extended Analysis is Superior
+Richer Causal Insights:
+By incorporating multiple refutation tests (data subset and placebo), the extended analysis provides stronger evidence on whether the observed effect of Gender is causal or merely a correlation. The near-zero effect in the placebo test strongly suggests that Gender’s causal influence is modest.
+
+Intervention Experiment:
+The intervention experiment (setting Gender to a constant) further challenges the model’s assumptions. Although the effect couldn’t be estimated due to the constant value, this failure itself provides insight: it confirms that variation in Gender is necessary to drive any effect, which indirectly supports the interpretation that Gender’s causal role is limited.
+
+Comparative Performance Evaluation:
+Training a model on a modified dataset (without Gender) and comparing its performance with the original model helps determine if removing Gender leads to improved fairness (or negligible performance loss). In this case, the modified model’s performance is very similar to that of the original, suggesting that Gender might not be a dominant driver of predictive power or bias.
+
+Comprehensive Approach:
+The extended analysis does not rely solely on a single causal effect estimate; it cross-validates the findings through refutation and intervention experiments. This comprehensive approach offers greater confidence in determining whether bias is causally driven by Gender or if other factors are at play.
+
+Conclusion
+The extended causal fairness analysis shows that:
+
+The estimated causal effect of Gender on Attrition is modest (approximately 4.63%) and not robust to placebo tests.
+
+An intervention experiment indicates that constant Gender values prevent causal estimation, underscoring the need for variability.
+
+A model trained without Gender maintains similar performance, implying that removing Gender does not greatly harm predictive accuracy.
+
+These findings together suggest that while Gender is associated with Attrition, its causal role in driving bias may be limited. This extended analysis is superior to a basic analysis because it adds multiple layers of validation, providing a deeper, more nuanced understanding of the relationships in the data. This, in turn, informs better bias mitigation strategies for the final model.
