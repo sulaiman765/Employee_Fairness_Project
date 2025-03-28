@@ -1218,3 +1218,139 @@ An intervention experiment indicates that constant Gender values prevent causal 
 A model trained without Gender maintains similar performance, implying that removing Gender does not greatly harm predictive accuracy.
 
 These findings together suggest that while Gender is associated with Attrition, its causal role in driving bias may be limited. This extended analysis is superior to a basic analysis because it adds multiple layers of validation, providing a deeper, more nuanced understanding of the relationships in the data. This, in turn, informs better bias mitigation strategies for the final model.
+
+Detailed Interpretation of Interactive 3D Visualization Results For Train FCNN Adversarial Learning:
+
+Points Represent Individual Trials:
+
+Each point corresponds to a unique hyperparameter configuration (combination of learning rate, batch size, and λ) tested during the tuning process.
+
+Hovering over a point in the interactive plot reveals the exact hyperparameter values and the resulting metrics (F1 score, fairness penalty, combined score).
+
+Axes and Their Meaning:
+
+X-axis (F1 Score):
+
+Indicates overall predictive performance, with higher values representing a better balance of precision and recall.
+
+Y-axis (Fairness Penalty):
+
+Measures disparities in subgroup fairness metrics (e.g., differences in positive prediction rates, TPR, and FPR between sensitive groups). Lower values indicate more equitable predictions.
+
+Z-axis (Combined Score):
+
+Represents an integrated metric calculated as F1 score minus a fraction of the fairness penalty. Higher combined scores mean the model achieves a better overall trade-off between accuracy and fairness.
+
+Evaluating Good vs. Poor Results:
+
+High Combined Score (Good Results):
+
+Points that are located high along the Z-axis (and appear in warm colors, such as yellow/orange) indicate configurations with a high F1 score and a low fairness penalty. These are considered optimal as they provide a balanced performance–fairness trade-off.
+
+High F1 but High Fairness Penalty (Suboptimal):
+
+Some points might exhibit a high F1 score yet also incur a large fairness penalty. This imbalance reduces the combined score, suggesting that despite good accuracy, the model may still be biased.
+
+Low F1 with Low Fairness Penalty (Also Suboptimal):
+
+Trials with very low F1 scores, even if they have low fairness penalties, result in low combined scores. These configurations indicate poor overall performance despite being fairer.
+
+Overall Insights:
+
+Trade-off Visualization:
+
+The scatter plot visually demonstrates the inherent trade-off between maximizing predictive performance (F1 score) and minimizing bias (fairness penalty).
+
+Hyperparameter Selection Guidance:
+
+By identifying points with the highest combined scores, you can determine which hyperparameter settings offer the best balance. These “sweet spot” configurations indicate the most effective compromise between achieving high accuracy and reducing bias.
+
+Practical Impact:
+
+This interactive visualization empowers stakeholders to explore different model configurations and to understand how changes in hyperparameters affect both the accuracy and fairness of predictions. It ultimately supports informed decision-making for selecting the best model.
+
+Detailed Interpretation of the 3D Scatter Plot Results
+Each point in this interactive 3D scatter plot represents one hyperparameter trial of our adversarial FCNN model. In this visualization, the hyperparameters (learning rate, batch size, and adversarial weight λ) are varied, and each trial is evaluated on three key metrics:
+
+X-axis: F1 Score
+Indicates the model's overall performance by balancing precision and recall. A higher F1 score reflects better predictive performance.
+
+Y-axis: Fairness Penalty
+Measures disparities in subgroup metrics (such as differences in positive prediction rate, true positive rate, and false positive rate) between sensitive groups (here, Gender). A lower fairness penalty means that the model is more equitable.
+
+Z-axis & Color Scale: Combined Score
+Defined as:
+
+Combined Score
+=
+F1 Score
+−
+𝛽
+×
+Fairness Penalty
+Combined Score=F1 Score−β×Fairness Penalty
+with β as a scaling factor (here, 0.5). A higher combined score indicates a better overall balance between performance and fairness.
+
+What the Points Show
+Good Results (High Combined Score):
+
+Points with a high F1 score and a low fairness penalty will have a high combined score.
+
+These points tend to appear toward the top (high Z-axis) and are color-coded in warm colors (orange/yellow).
+
+Interpretation:
+
+The model configuration corresponding to these points achieves strong predictive performance while keeping bias (as measured by subgroup differences) relatively low.
+
+This indicates that the model is effective at reducing bias without sacrificing too much accuracy.
+
+Poor Results (Low Combined Score):
+
+Points with either a low F1 score, a high fairness penalty, or both will have a low combined score.
+
+They appear lower on the Z-axis and are shown in cooler colors (blue/purple).
+
+Interpretation:
+
+Even if a model achieves a high F1 score, if it incurs a large fairness penalty (indicating significant bias between subgroups), the overall trade-off is poor.
+
+Conversely, a model with a very low F1 score—even if it is fair—will still result in a low combined score.
+
+These results suggest that the model configuration is either biased or underperforming, meaning further tuning or mitigation strategies are needed.
+
+Trade-Off Analysis:
+
+The scatter plot reveals the inherent tension between achieving high accuracy (F1 score) and low bias (fairness penalty).
+
+Points that cluster with a good combined score indicate that certain hyperparameter settings allow the model to reach an optimal compromise.
+
+This is essential, as it shows that it is possible to reduce bias (lower fairness penalty) without drastically compromising the F1 score.
+
+What This Means for Bias Reduction
+High Combined Scores:
+
+When you observe points with high combined scores, it implies that the model is effective at both achieving high performance and reducing bias.
+
+This is the ideal scenario for your project because it demonstrates that the adversarial approach (with proper tuning) can mitigate bias while still maintaining strong predictive power.
+
+Low Combined Scores:
+
+If the points fall into a region with low combined scores, it indicates that there is a significant trade-off issue—either the model is biased (high fairness penalty) or its predictive performance is poor (low F1), or both.
+
+These configurations are less desirable and suggest that further refinement is necessary.
+
+Interactive Exploration
+The interactive aspect of the 3D visualization allows you to:
+
+Hover Over Points:
+
+View the specific hyperparameter values (learning rate, batch size, λ) that produced each result.
+
+This detailed view helps identify which configurations yield a desirable balance.
+
+Rotate and Zoom:
+
+Explore the distribution of trials in 3D space to understand the overall landscape of performance and fairness trade-offs.
+
+By analyzing this 3D visualization, you can conclude whether the model effectively reduces bias. If you see many points with high F1 scores and low fairness penalties (resulting in high combined scores), then the model is performing well on both fronts. Conversely, if the best points still have a relatively high fairness penalty, then you might need to further refine your approach or adjust the trade-off parameters. This detailed visual analysis provides a clear framework for selecting the optimal hyperparameter configuration for achieving both high accuracy and fairness.
+
