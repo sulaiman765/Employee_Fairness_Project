@@ -1219,6 +1219,8 @@ A model trained without Gender maintains similar performance, implying that remo
 
 These findings together suggest that while Gender is associated with Attrition, its causal role in driving bias may be limited. This extended analysis is superior to a basic analysis because it adds multiple layers of validation, providing a deeper, more nuanced understanding of the relationships in the data. This, in turn, informs better bias mitigation strategies for the final model.
 
+
+
 Detailed Interpretation of Interactive 3D Visualization Results For Train FCNN Adversarial Learning:
 
 Points Represent Individual Trials:
@@ -1269,16 +1271,23 @@ Practical Impact:
 
 This interactive visualization empowers stakeholders to explore different model configurations and to understand how changes in hyperparameters affect both the accuracy and fairness of predictions. It ultimately supports informed decision-making for selecting the best model.
 
-Detailed Interpretation of the 3D Scatter Plot Results
-Each point in this interactive 3D scatter plot represents one hyperparameter trial of our adversarial FCNN model. In this visualization, the hyperparameters (learning rate, batch size, and adversarial weight λ) are varied, and each trial is evaluated on three key metrics:
+3D Visualization for train_fcnn_with_shap_for_new_preprocessing
+Each point in this scatter plot represents a single hyperparameter trial for the “train_fcnn_with_shap_for_new_preprocessing” model, where the axes indicate:
 
-X-axis: F1 Score
-Indicates the model's overall performance by balancing precision and recall. A higher F1 score reflects better predictive performance.
+F1 Score (X-axis)
 
-Y-axis: Fairness Penalty
-Measures disparities in subgroup metrics (such as differences in positive prediction rate, true positive rate, and false positive rate) between sensitive groups (here, Gender). A lower fairness penalty means that the model is more equitable.
+Reflects overall predictive performance by combining precision and recall.
 
-Z-axis & Color Scale: Combined Score
+Higher values mean the model is better at correctly identifying true positives while minimizing false positives and false negatives.
+
+Fairness Penalty (Y-axis)
+
+Measures subgroup disparities (e.g., TPR, FPR differences) between Gender groups.
+
+Lower values mean the model’s predictions are more equitable.
+
+Combined Score (Z-axis + Color Scale)
+
 Defined as:
 
 Combined Score
@@ -1288,69 +1297,65 @@ F1 Score
 𝛽
 ×
 Fairness Penalty
-Combined Score=F1 Score−β×Fairness Penalty
-with β as a scaling factor (here, 0.5). A higher combined score indicates a better overall balance between performance and fairness.
+,
+Combined Score=F1 Score−β×Fairness Penalty,
+with 
+𝛽
+β typically set to 0.5.
 
-What the Points Show
-Good Results (High Combined Score):
+A higher combined score indicates a better overall trade-off between accuracy (F1) and fairness (lower penalty).
 
-Points with a high F1 score and a low fairness penalty will have a high combined score.
+Points appear in warmer colors (yellow/orange) if their combined score is higher, and cooler colors (purple/blue) if it’s lower.
 
-These points tend to appear toward the top (high Z-axis) and are color-coded in warm colors (orange/yellow).
+Interpreting Good vs. Bad Results
+High Combined Score = “Good”
 
-Interpretation:
+Points near the top-left region (lower fairness penalty, decent F1) and in warm colors indicate that the model achieves strong performance while maintaining lower bias.
 
-The model configuration corresponding to these points achieves strong predictive performance while keeping bias (as measured by subgroup differences) relatively low.
+These are typically the most desirable hyperparameter configurations, showing that the model can make accurate predictions without unfairly disadvantaging certain subgroups.
 
-This indicates that the model is effective at reducing bias without sacrificing too much accuracy.
+Low Combined Score = “Bad”
 
-Poor Results (Low Combined Score):
+Points that are lower on the Z-axis or appear in cooler colors (blue/purple) are ones where the model is either:
 
-Points with either a low F1 score, a high fairness penalty, or both will have a low combined score.
+Achieving high F1 but at the cost of a high fairness penalty (more bias), or
 
-They appear lower on the Z-axis and are shown in cooler colors (blue/purple).
+Minimizing bias but suffering from low F1 (poor overall accuracy), or
 
-Interpretation:
+Failing on both fronts simultaneously.
 
-Even if a model achieves a high F1 score, if it incurs a large fairness penalty (indicating significant bias between subgroups), the overall trade-off is poor.
+Such configurations are less ideal, as they do not provide a balanced solution between performance and fairness.
 
-Conversely, a model with a very low F1 score—even if it is fair—will still result in a low combined score.
+Trade-Off Curve
 
-These results suggest that the model configuration is either biased or underperforming, meaning further tuning or mitigation strategies are needed.
+You can often see a downward slope from high combined score (good balance) to low combined score (poor balance).
 
-Trade-Off Analysis:
+This shows the inherent tension between improving accuracy and keeping bias minimal. Some points manage to stay at a “sweet spot,” while others fall off in one direction or another.
 
-The scatter plot reveals the inherent tension between achieving high accuracy (F1 score) and low bias (fairness penalty).
+Does It Show Good Results for Reducing Bias?
+Many Points with Moderate–High Combined Scores:
 
-Points that cluster with a good combined score indicate that certain hyperparameter settings allow the model to reach an optimal compromise.
+If you see multiple points in the upper region with bright colors, that’s a sign that several hyperparameter trials balanced accuracy and fairness effectively.
 
-This is essential, as it shows that it is possible to reduce bias (lower fairness penalty) without drastically compromising the F1 score.
+This implies that the “train_fcnn_with_shap_for_new_preprocessing” model can reduce bias to a reasonable extent without sacrificing too much predictive performance.
 
-What This Means for Bias Reduction
-High Combined Scores:
+Points with Low Fairness Penalty:
 
-When you observe points with high combined scores, it implies that the model is effective at both achieving high performance and reducing bias.
+Look for points along the Y-axis with lower penalty values. If these points also have a moderate or high F1 score, it indicates that the model is actively reducing bias and still predicting well.
 
-This is the ideal scenario for your project because it demonstrates that the adversarial approach (with proper tuning) can mitigate bias while still maintaining strong predictive power.
+Points with High Fairness Penalty:
 
-Low Combined Scores:
+If some points cluster toward higher fairness penalty, it means certain configurations still lead to more bias. These trials may achieve a high F1 score but fail at fairness—pulling their combined score down.
 
-If the points fall into a region with low combined scores, it indicates that there is a significant trade-off issue—either the model is biased (high fairness penalty) or its predictive performance is poor (low F1), or both.
+Overall, the presence of yellow/orange points in the top-left region means there are hyperparameter configurations that achieve a solid F1 score and keep the fairness penalty relatively low. That suggests the model is indeed capable of reducing bias while maintaining respectable predictive performance.
 
-These configurations are less desirable and suggest that further refinement is necessary.
+Conclusion
+Positive Indicators:
 
-Interactive Exploration
-The interactive aspect of the 3D visualization allows you to:
+Warm-colored points in the higher Z-axis range indicate a good trade-off between accuracy and fairness—showing that “train_fcnn_with_shap_for_new_preprocessing” can reduce bias effectively while retaining a solid F1 score.
 
-Hover Over Points:
+Areas for Improvement:
 
-View the specific hyperparameter values (learning rate, batch size, λ) that produced each result.
+Purple/blue points with a high fairness penalty or a very low F1 highlight suboptimal trials. You might exclude these configurations or further refine them if you want to push them toward better fairness–performance balance.
 
-This detailed view helps identify which configurations yield a desirable balance.
-
-Rotate and Zoom:
-
-Explore the distribution of trials in 3D space to understand the overall landscape of performance and fairness trade-offs.
-
-By analyzing this 3D visualization, you can conclude whether the model effectively reduces bias. If you see many points with high F1 scores and low fairness penalties (resulting in high combined scores), then the model is performing well on both fronts. Conversely, if the best points still have a relatively high fairness penalty, then you might need to further refine your approach or adjust the trade-off parameters. This detailed visual analysis provides a clear framework for selecting the optimal hyperparameter configuration for achieving both high accuracy and fairness.
-
+This visualization ultimately confirms whether your deep learning approach with SHAP-based preprocessing can mitigate bias without compromising accuracy. As long as multiple points appear with a relatively high combined score, the model is demonstrating good results for reducing bias while remaining predictive.
